@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="http://fonts.googleapis.com/css?family=Montserrat:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style>
+      body {
+        background-color: #11009e;
+        background-size: cover;
+        font-family: Montserrat;
+      }
+
+      form > label {
+        padding-left: 5px;
+      }
+
+      .input-block {
+        width: 50%;
+        padding: 20px;
+        background: #fff;
+        border-radius: 5px;
+        border-top: 5px solid #4942e4;
+        margin: 0 auto;
+      }
+
+      .input-block h1 {
+        text-align: center;
+        color: #000;
+        font-size: 24px;
+        text-transform: uppercase;
+        margin-top: 0;
+        margin-bottom: 20px;
+      }
+      .input-block h2 {
+        text-align: center;
+        color: #000;
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-top: 0;
+        margin-bottom: 20px;
+      }
+
+      .input-block input {
+        width: 100%;
+        height: 42px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        font-size: 14px;
+        font-family: Montserrat;
+        padding: 0 20px 0 10px;
+        outline: none;
+      }
+
+      .input-block input:active,
+      .input-block input:focus {
+        border: 1px solid #11009e;
+      }
+
+      .input-block button {
+        width: 100%;
+        height: 40px;
+        background: #11009e;
+        box-sizing: border-box;
+        border-radius: 5px;
+        border: 1px solid #11009e;
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        font-family: Montserrat;
+        outline: none;
+        cursor: pointer;
+      }
+
+      .input-block button:hover {
+        background: #4942e4;
+        border: 1px solid #4942e4;
+      }
+
+      #output {
+        display: none;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background-color: #dcdcdc;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #a9a9a9;
+      }
+
+      tr td:first-child {
+        text-align: left;
+      }
+
+      @media (max-width: 768px) {
+        .input-block {
+          width: 90%;
+          padding: 20px;
+          background: #fff;
+          border-radius: 5px;
+          border-top: 5px solid #ff656c;
+          margin: auto;
+        }
+      }
+    </style>
+    <title>Defitra Hidayatullah</title>
+  </head>
+  <body>
+    <div class="input-block">
+      <h1>Kalkulator Cost Volume Profit (CVP)</h1>
+      <h2>
+        Defitra Hidayatullah <br />
+        NPM.91123010
+      </h2>
+      <form id="cvpForm">
+        <label for="salesQuantity">Kuantitas Penjualan (unit)</label>
+        <input type="number" id="salesQuantity" placeholder="Sales Quantity" />
+
+        <label for="unitPrice">Harga per unit (Rp)</label>
+        <input type="number" id="unitPrice" placeholder="Price per unit" />
+
+        <label for="variableCostPerUnit">Biaya Variabel per unit (Rp)</label>
+        <input
+          type="number"
+          id="variableCostPerUnit"
+          placeholder="Variable Cost per Unit"
+        />
+
+        <label for="fixedCost">Biaya Tetap (Rp)</label>
+        <input type="number" id="fixedCost" placeholder="Fixed Cost" />
+
+        <button type="button" onclick="calculate()">Hitung!</button>
+      </form>
+      <div id="output">
+        <table></table>
+        <br />
+        <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
+      </div>
+
+      <script>
+        function calculate() {
+          let quantity = parseInt(
+            document.getElementById("salesQuantity").value
+          );
+          let pricePerUnit = parseInt(
+            document.getElementById("unitPrice").value
+          );
+          let variablePricePerUnit = parseInt(
+            document.getElementById("variableCostPerUnit").value
+          );
+          let biayaTetap = parseInt(document.getElementById("fixedCost").value);
+
+          if (
+            isNaN(quantity) ||
+            isNaN(pricePerUnit) ||
+            isNaN(variablePricePerUnit) ||
+            isNaN(biayaTetap)
+          ) {
+            alert("Mohon input nilai integer pada setiap input!");
+            return;
+          }
+
+          let penjualan = pricePerUnit * quantity;
+          let totalBiayaVariabel = variablePricePerUnit * quantity;
+          let marginKontribusi = penjualan - totalBiayaVariabel;
+          let marginKontribusiPerUnit = marginKontribusi / quantity;
+          let laba = marginKontribusi - biayaTetap;
+          let rasioMarginKontribusi = marginKontribusi / penjualan;
+          let bepUnit = biayaTetap / marginKontribusiPerUnit;
+          let bepRp = biayaTetap / rasioMarginKontribusi;
+          let marginOfSafety = penjualan - bepRp;
+          let persentaseMos = ((marginOfSafety / penjualan) * 100).toFixed(2);
+          let faktorTuasanOperasi = marginKontribusi / laba;
+
+          // Update the table with the calculated values
+          let outputTable = document.querySelector("#output table");
+          outputTable.innerHTML = `
+                <tr><th>Akun</th><th>Rp</th><th> Rp/unit</th></tr>
+                <tr><td>Kuantitas</td><td></td><td>${quantity.toLocaleString()} unit</td></tr>
+                <tr><td>Penjualan</td><td>Rp${penjualan.toLocaleString()}</td><td>Rp${pricePerUnit.toLocaleString()}</td></tr>
+                <tr><td>Biaya Variabel</td><td>Rp${totalBiayaVariabel.toLocaleString()}</td><td>Rp${variablePricePerUnit.toLocaleString()}</td></tr>
+                <tr><td><strong>Margin Kontribusi</strong></td><td><strong>Rp${marginKontribusi.toLocaleString()}</strong></td><td><strong>Rp${marginKontribusiPerUnit.toLocaleString()}</strong></td></tr>
+                <tr><td>Biaya Tetap</td><td>Rp${biayaTetap.toLocaleString()}</td><td></td></tr>
+                <tr><td><strong>Laba</strong></td><td><strong>Rp${laba.toLocaleString()}</strong></td><td></td></tr>
+                <tr><td>BEP (Rp)</td><td>Rp${bepRp.toLocaleString()}</td><td></td></tr>
+                <tr><td>BEP (unit)</td><td></td><td>${bepUnit.toLocaleString()} unit</td></tr>
+                <tr><td>Margin of Safety</td><td>Rp${marginOfSafety.toLocaleString()}</td><td></td></tr>
+                <tr><td>Rasio MoS</td><td>${persentaseMos}%</td><td></td></tr>
+                <tr><td>Faktor Tuasan Operasi</td><td>${faktorTuasanOperasi.toFixed(
+                  2
+                )}</td><td></td></tr>
+            `;
+
+          // Show the output field and copy button
+          document.getElementById("output").style.display = "block";
+        }
+
+        function copyToClipboard() {
+          let outputTable = document.querySelector("#output table");
+          let range = document.createRange();
+          range.selectNode(outputTable);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand("copy");
+          window.getSelection().removeAllRanges();
+
+          alert("Table content copied to clipboard!");
+        }
+      </script>
+    </div>
+  </body>
+</html>
